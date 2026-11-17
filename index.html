@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b6e69">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Infertility Case Record</title>
+<style>
+:root{color-scheme:light dark;--bg:light-dark(#f6f7f6,#101413);--card:light-dark(#fff,#181e1d);--ink:light-dark(#15201e,#e9efed);--mute:light-dark(#5b6966,#9aa8a5);--line:light-dark(#dfe4e2,#2a3331);--acc:light-dark(#0b6e69,#4fc2b9);--accInk:light-dark(#fff,#062b28);--A:light-dark(#8a5a00,#f0b84a);--B:light-dark(#b3261e,#ff8a80);--C:light-dark(#5b3fa0,#b9a3f2);--D:light-dark(#2f5d8a,#8fbbe8);--soft:light-dark(#e7f3f2,#14302d);--warn:light-dark(#8a5a00,#f0b84a)}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;overflow-x:clip}
+h1,h2{font-family:Georgia,"Noto Serif",serif;font-weight:600;line-height:1.15;margin:0}
+h1{font-size:20px}h2{font-size:19px;margin:20px 0 10px}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:10px max(4vw,12px);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+header .sp{flex:1}
+.pill{font-size:13px;font-weight:600;border-radius:999px;padding:4px 10px;border:1.5px solid currentColor;white-space:nowrap;background:none;min-height:0;cursor:pointer}
+.on{color:var(--acc)}.off{color:var(--warn)}
+.wrap{max-width:820px;margin:0 auto;padding:14px max(4vw,12px) 96px}
+button{font:inherit;font-weight:600;min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+button.pri{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
+button.danger{color:var(--B);border-color:var(--B)}
+button:disabled{opacity:.5}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.note{font-size:13px;color:var(--mute)}
+.banner{background:var(--soft);border-radius:10px;padding:10px 14px;font-size:14px;margin-bottom:12px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stat b{display:block;font-size:24px;font-family:Georgia,serif;line-height:1.1}
+.stat span{font-size:13px;color:var(--mute)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tools input{flex:1 1 200px}.tools select{flex:1 1 150px}
+input,select,textarea{font:inherit;font-size:16px;width:100%;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+textarea{min-height:80px;resize:vertical}
+.list{display:grid;gap:8px}
+.case{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;text-align:left;width:100%;display:grid;gap:4px;font-weight:400}
+.case .top{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.case .top b{font-size:17px}.meta{font-size:14px;color:var(--mute)}
+.chip{display:inline-block;font-size:12.5px;font-weight:600;border-radius:999px;padding:2px 9px;border:1.5px solid currentColor;white-space:nowrap}
+.gA{color:var(--A)}.gB{color:var(--B)}.gC{color:var(--C)}.gD{color:var(--D)}
+.unsynced{font-size:12px;color:var(--warn);font-weight:600}
+.empty{text-align:center;padding:40px 10px;color:var(--mute)}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px;position:sticky;top:65px;background:var(--bg);z-index:4}
+.tabs a{flex:none;font-size:14px;font-weight:600;color:var(--acc);text-decoration:none;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
+.sec{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:2px 16px 16px;margin-bottom:14px;scroll-margin-top:125px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px 14px}
+label.f{display:grid;gap:4px;font-size:14px;font-weight:500}
+.multi{display:flex;flex-wrap:wrap;gap:6px}
+.multi label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px;min-height:40px;cursor:pointer}
+.multi input{width:18px;min-height:18px;margin:0;accent-color:var(--acc)}
+.multi label:has(input:checked){background:var(--soft);border-color:var(--acc)}
+.full{grid-column:1/-1}
+.dx{border-radius:12px;background:var(--soft);padding:12px 14px;margin:12px 0}
+.dx p{margin:4px 0;font-size:14px}
+.calc{font-size:15px;color:var(--acc);font-weight:600;padding-top:10px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px max(4vw,12px);display:flex;gap:8px;z-index:6}
+.bar .sp{flex:1}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+[hidden]{display:none!important}
+.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:9;max-width:90vw}
+</style>
+</head>
+<body>
+<header>
+  <h1>Infertility case record</h1>
+  <button type="button" class="pill" id="net" title="Sync status">…</button>
+  <span class="sp"></span>
+  <button type="button" id="setBtn" aria-label="Settings">Settings</button>
+  <button type="button" id="newBtn" class="pri">+ New case</button>
+</header>
+
+<main class="wrap" id="listView">
+  <div class="banner" id="setupHint" hidden>Cases are saved on this phone. To back them up and share with your team, add your Google Sheet link in <b>Settings</b>.</div>
+  <div class="stats" id="stats"></div>
+  <div class="tools">
+    <input id="q" type="search" placeholder="Search farmer, village, tag" aria-label="Search">
+    <select id="fg" aria-label="Filter by group"><option value="">All groups</option><option value="A">A: deficiency</option><option value="B">B: infection</option><option value="C">C: ovarian</option><option value="D">D: AI/management</option></select>
+    <select id="fo" aria-label="Filter by outcome"><option value="">All outcomes</option><option>Under treatment</option><option>Pregnant</option><option>Not pregnant</option><option>Culled</option></select>
+  </div>
+  <div class="list" id="list"></div>
+</main>
+
+<main class="wrap" id="formView" hidden>
+  <nav class="tabs" id="tabs"></nav>
+  <form id="form" novalidate></form>
+</main>
+
+<main class="wrap" id="setView" hidden>
+  <section class="sec">
+    <h2>Google Sheet sync</h2>
+    <p class="note">Paste the web app URL and secret key from your Apps Script setup. Cases sync automatically whenever the phone is online.</p>
+    <div class="grid">
+      <label class="f full" for="s_url">Sync URL (Apps Script web app)<input id="s_url" type="url" placeholder="https://script.google.com/macros/s/…/exec"></label>
+      <label class="f" for="s_key">Secret key<input id="s_key" type="text" autocomplete="off"></label>
+      <label class="f" for="s_by">Your name (fills "Recorded by")<input id="s_by" type="text"></label>
+    </div>
+    <div class="row"><button type="button" class="pri" id="saveSet">Save settings</button><button type="button" id="syncNow">Sync now</button></div>
+    <p class="note" id="lastSync"></p>
+  </section>
+  <section class="sec">
+    <h2>Data</h2>
+    <p class="note" id="dataInfo"></p>
+    <div class="row"><button type="button" id="exportBtn">Export CSV</button></div>
+  </section>
+</main>
+
+<div class="bar" id="bar" hidden>
+  <button type="button" id="backBtn">Back</button>
+  <button type="button" id="delBtn" class="danger">Delete</button>
+  <span class="sp"></span>
+  <button type="button" id="saveBtn" class="pri">Save case</button>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+{
+const OV=['Small, smooth, inactive','Follicle','CL present','Follicular cyst','Luteal cyst','Not palpated'];
+const SECS=[
+ {id:'animal',t:'Farmer & animal',f:[['date','Visit date','date'],['farmer','Farmer name','text'],['village','Village / DCS','text'],['tag','Animal ID / ear tag','text'],['species','Species','sel',['Cow','Buffalo']],['breed','Breed','text'],['age','Age (years)','num'],['parity','Parity (calvings)','num']]},
+ {id:'history',t:'History',f:[['calving','Last calving date','date'],['dpp','Days postpartum','calc'],['ais','AIs since calving','num'],['lastai','Last AI date','date'],['complaint','Main complaint','sel',['Anestrus (no heat)','Repeat breeding','Irregular heat','Heifer not cycling','Abnormal discharge']],['calvhx','Calving history','multi',['Normal','Dystocia','Retained placenta','Abortion','Stillbirth','Twins']],['dischSeen','Discharge seen by farmer','sel',['None','Cloudy / whitish','Purulent / foul']],['dry','Dry fodder','sel',['Mostly straw / kadbi','Mixed with greens','Little dry fodder']],['green','Green fodder (kg/day)','num'],['conc','Concentrate (kg/day)','num'],['mm','Mineral mixture (g/day)','num'],['deworm','Dewormed in last 6 months','sel',['Yes','No','Unknown']],['herd','Others in herd with same problem','sel',['No','Yes','Unknown']]]},
+ {id:'clinical',t:'Clinical exam',f:[['bcs','BCS (1–5)','sel',['1','1.5','2','2.25','2.5','2.75','3','3.25','3.5','4','4.5','5']],['temp','Temperature (°F)','num'],['signs','Deficiency signs','multi',['Rough / faded coat','Pica','Skin / hoof lesions','Night blindness','Pale mucosa','Ticks / worms','None']]]},
+ {id:'repro',t:'Reproductive exam',f:[['lov','Left ovary','sel',OV],['rov','Right ovary','sel',OV],['uterus','Uterus','sel',['Normal','Thick / doughy','Fluid (pyometra)','Poor involution','Adhesions']],['score','Discharge score','sel',['0 – clear','1 – flecks of pus','2 – up to 50% pus','3 – over 50% pus / foul']],['wst','White side test','sel',['Not done','Negative','Positive']],['usg','USG findings','text']]},
+ {id:'dx',t:'Diagnosis',f:[['groups','Diagnosis group','multi',['A','B','C','D']],['dxnote','Diagnosis notes','area']]},
+ {id:'tx',t:'Treatment & follow-up',f:[['tx','Treatment given (drug, dose, route)','area'],['txdate','Treatment date','date'],['recheck','Re-check date','date'],['recheckF','Re-check findings','area'],['heat','Heat / AI date','date'],['tech','AI technician','text'],['pd','PD result','sel',['Pending','Pregnant','Not pregnant']],['outcome','Outcome','sel',['Under treatment','Pregnant','Not pregnant','Culled']],['by','Recorded by','text']]}
+];
+const GN={A:'A: deficiency',B:'B: infection',C:'C: ovarian',D:'D: AI/management'};
+const ALL=SECS.flatMap(s=>s.f);
+const MULTI=ALL.filter(f=>f[2]=='multi').map(f=>f[0]);
+// columns sent to the sheet: id first, then every field, then bookkeeping
+const COLS=[['id','Case ID'],...ALL.map(f=>[f[0],f[1]]),['updated','Last updated (ms)'],['device','Device']];
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
+
+let cases=LS.get('ifc_cases',[]);           // includes tombstones {id,deleted:true,_dirty:true}
+let cfg=LS.get('ifc_cfg',{url:'',key:'',by:''});
+let device=LS.get('ifc_device',null);if(!device){device='dev-'+Math.random().toString(36).slice(2,8);LS.set('ifc_device',device)}
+let cur=null,delArmed=false,syncing=false;
+const live_=()=>cases.filter(c=>!c.deleted);
+function store(){if(!LS.set('ifc_cases',cases))toast('Phone storage is full. Export and sync, then delete old cases.')}
+
+function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,3000)}
+function today(){const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)}
+function dpp(c){if(!c.calving)return '';const n=Math.round((Date.parse(c.date||today())-Date.parse(c.calving))/864e5);return isFinite(n)&&n>=0?n:''}
+
+function suggest(c){
+  const g=new Set(),why=[];const bcs=parseFloat(c.bcs);const s=parseInt(c.score);
+  if(bcs&&bcs<2.5){g.add('A');why.push('BCS below 2.5: correct energy and minerals first')}
+  if(c.lov==OV[0]&&c.rov==OV[0]){g.add('A');why.push('Both ovaries inactive: true anestrus')}
+  if((c.signs||[]).some(x=>x!='None')&&(c.mm===''||c.mm==null||+c.mm<25)){g.add('A');why.push('Deficiency signs with little or no mineral mixture')}
+  if(s>=1){g.add('B');why.push('Discharge score '+s)}
+  if(c.wst=='Positive'){g.add('B');why.push('White side test positive')}
+  if(['Thick / doughy','Fluid (pyometra)','Poor involution'].includes(c.uterus)){g.add('B');why.push('Uterus: '+c.uterus.toLowerCase())}
+  if(+c.temp>=103)why.push('Fever: treat as metritis / systemic disease first');
+  const ov=[c.lov,c.rov];
+  if(ov.some(x=>x&&x.includes('cyst'))){g.add('C');why.push('Ovarian cyst')}
+  if(ov.includes('CL present')&&/Anestrus|Heifer/.test(c.complaint||'')){g.add('C');why.push('CL present but no heat seen: silent or missed heat')}
+  if(c.uterus=='Adhesions')why.push('Adhesions: guarded prognosis');
+  if(!g.size&&c.uterus=='Normal'&&!(s>=1)){g.add('D');why.push('Normal tract: check heat detection and AI timing')}
+  return {g:[...g].sort(),why};
+}
+
+function field([k,l,t,o]){
+  const id='f_'+k;
+  if(t=='calc')return `<div><div style="font-size:14px;font-weight:500">${l}</div><div class="calc" id="${id}">–</div></div>`;
+  if(t=='multi')return `<fieldset class="full" style="border:0;padding:0;margin:0"><legend style="font-size:14px;font-weight:500;margin-bottom:6px">${l}</legend><div class="multi">${o.map(v=>`<label><input type="checkbox" name="${k}" value="${esc(v)}">${esc(k=='groups'?GN[v]:v)}</label>`).join('')}</div></fieldset>`;
+  let inp;
+  if(t=='sel')inp=`<select id="${id}"><option value="">–</option>${o.map(v=>`<option>${esc(v)}</option>`).join('')}</select>`;
+  else if(t=='area')inp=`<textarea id="${id}"></textarea>`;
+  else inp=`<input id="${id}" type="${t=='num'?'number':t}" ${t=='num'?'inputmode="decimal" step="any" min="0"':''}>`;
+  return `<label class="f ${t=='area'?'full':''}" for="${id}">${l}${inp}</label>`;
+}
+$('form').innerHTML=SECS.map(s=>`<section class="sec" id="s_${s.id}"><h2>${s.t}</h2>${s.id=='dx'?'<div class="dx" id="dxBox"></div>':''}<div class="grid">${s.f.map(field).join('')}</div></section>`).join('');
+$('tabs').innerHTML=SECS.map(s=>`<a href="#s_${s.id}" data-s="${s.id}">${s.t}</a>`).join('');
+$('tabs').addEventListener('click',e=>{const a=e.target.closest('a');if(!a)return;e.preventDefault();$('s_'+a.dataset.s).scrollIntoView({behavior:'smooth'})});
+
+function read(){const c={...(cur||{})};for(const [k,,t] of ALL){if(t=='calc')continue;if(t=='multi')c[k]=[...document.querySelectorAll(`input[name="${k}"]:checked`)].map(i=>i.value);else c[k]=$('f_'+k).value.trim()}return c}
+function fill(c){for(const [k,,t] of ALL){if(t=='calc')continue;if(t=='multi')document.querySelectorAll(`input[name="${k}"]`).forEach(i=>i.checked=(c[k]||[]).includes(i.value));else $('f_'+k).value=c[k]??''}live()}
+function live(){
+  const c=read();const d=dpp(c);$('f_dpp').textContent=d===''?'–':d+' days';
+  const {g,why}=suggest(c);
+  $('dxBox').innerHTML=`<p><b>Suggested group:</b> ${g.length?g.map(x=>`<span class="chip g${x}">${GN[x]}</span>`).join(' '):'<span class="note">fill in BCS and the reproductive exam</span>'}</p>${why.map(w=>`<p>• ${esc(w)}</p>`).join('')}${g.length>1?'<p class="note">Mixed case: treat the infection and correct feeding together.</p>':''}${g.length?'<p><button type="button" id="useSug">Use suggestion</button></p>':''}`;
+  const u=$('useSug');if(u)u.onclick=()=>document.querySelectorAll('input[name="groups"]').forEach(i=>i.checked=g.includes(i.value));
+}
+$('form').addEventListener('input',live);$('form').addEventListener('change',live);
+
+function show(v){for(const x of ['listView','formView','setView'])$(x).hidden=x!=v;$('bar').hidden=v!='formView';$('newBtn').hidden=v!='listView';$('setBtn').hidden=v!='listView';scrollTo(0,0)}
+function openForm(c){
+  cur=c?{...c}:{id:'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),date:today(),outcome:'Under treatment',pd:'Pending',by:cfg.by||''};
+  fill(cur);$('delBtn').hidden=!c;delArmed=false;$('delBtn').textContent='Delete';show('formView');
+}
+function back(){cur=null;show('listView');render()}
+
+function upsertLocal(c){const i=cases.findIndex(x=>x.id==c.id);i<0?cases.push(c):cases[i]=c;store()}
+$('saveBtn').onclick=()=>{
+  const c=read();if(!c.farmer&&!c.tag){toast('Enter a farmer name or animal tag');$('f_farmer').focus();return}
+  c.dpp=dpp(c);c.updated=Date.now();c.device=device;c._dirty=true;
+  upsertLocal(c);toast(navigator.onLine&&cfg.url?'Saved. Syncing…':'Saved on this phone');back();sync();
+};
+$('delBtn').onclick=()=>{
+  if(!delArmed){delArmed=true;$('delBtn').textContent='Tap again to delete';return}
+  upsertLocal({id:cur.id,deleted:true,updated:Date.now(),_dirty:true});toast('Case deleted');back();sync();
+};
+$('backBtn').onclick=back;$('newBtn').onclick=()=>openForm(null);
+
+function render(){
+  const all=live_();const q=$('q').value.toLowerCase(),fg=$('fg').value,fo=$('fo').value;
+  const rows=all.filter(c=>(!q||[c.farmer,c.village,c.tag,c.breed].join(' ').toLowerCase().includes(q))&&(!fg||(c.groups||[]).includes(fg))&&(!fo||c.outcome==fo)).sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.updated||0)-(a.updated||0));
+  const n=k=>all.filter(c=>(c.groups||[]).includes(k)).length;
+  const preg=all.filter(c=>c.outcome=='Pregnant'||c.pd=='Pregnant').length;
+  $('stats').innerHTML=[[all.length,'Cases'],[n('A'),'A: deficiency'],[n('B'),'B: infection'],[n('C'),'C: ovarian'],[n('D'),'D: AI/mgmt'],[preg,'Pregnant']].map(([v,l])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join('');
+  $('list').innerHTML=rows.length?rows.map(c=>`<button type="button" class="case" data-id="${esc(c.id)}"><span class="top"><b>${esc(c.farmer||'(no name)')}</b><span class="meta">${esc(c.tag||'')}${c.species?' · '+esc(c.species):''}</span>${c._dirty?'<span class="unsynced">not synced</span>':''}</span><span class="meta">${[esc(c.village||''),c.date?'seen '+esc(c.date):'',dpp(c)!==''?dpp(c)+' DPP':'',esc(c.complaint||'')].filter(Boolean).join(' · ')}</span><span>${(c.groups||[]).map(x=>`<span class="chip g${x}">${GN[x]}</span>`).join(' ')} <span class="note">${esc(c.outcome||'')}</span></span></button>`).join(''):`<div class="empty">${all.length?'No cases match these filters.':'No cases yet. Tap <b>+ New case</b> to record the first animal.'}</div>`;
+  $('setupHint').hidden=!!cfg.url;
+  status();
+}
+$('list').addEventListener('click',e=>{const b=e.target.closest('.case');if(b)openForm(cases.find(c=>c.id==b.dataset.id))});
+['q','fg','fo'].forEach(i=>$(i).addEventListener('input',render));
+
+function status(){
+  const p=cases.filter(c=>c._dirty).length,el=$('net');
+  if(!navigator.onLine){el.className='pill off';el.textContent='Offline'+(p?' · '+p+' to sync':'')}
+  else if(!cfg.url){el.className='pill off';el.textContent='Phone only'}
+  else if(syncing){el.className='pill on';el.textContent='Syncing…'}
+  else{el.className='pill '+(p?'off':'on');el.textContent=p?p+' to sync':'Synced'}
+}
+$('net').onclick=()=>{if(!cfg.url){openSettings();return}sync(true)};
+
+// ---- sync with Google Sheet (Apps Script web app) ----
+async function call(method,body){
+  const url=cfg.url+(method=='GET'?(cfg.url.includes('?')?'&':'?')+'key='+encodeURIComponent(cfg.key):'');
+  const r=await fetch(url,method=='GET'?{method:'GET'}:{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
+  const j=await r.json();if(!j.ok)throw new Error(j.error||'Sync failed');return j;
+}
+function forSheet(c){const o={};for(const [k] of COLS){const v=c[k];o[k]=Array.isArray(v)?v.join('; '):(v??'')}if(c.deleted)o.deleted=true;return o}
+function fromSheet(o){const c={...o};for(const k of MULTI)c[k]=c[k]?String(c[k]).split('; ').filter(Boolean):[];c.updated=+c.updated||0;return c}
+async function sync(manual){
+  if(syncing||!cfg.url||!navigator.onLine){if(manual)toast(!cfg.url?'Add the sync URL in Settings first':'No internet. Cases will sync when you are online.');status();return}
+  syncing=true;status();
+  try{
+    const dirty=cases.filter(c=>c._dirty);
+    for(let i=0;i<dirty.length;i+=25){
+      const part=dirty.slice(i,i+25);
+      const j=await call('POST',{key:cfg.key,cols:COLS,cases:part.map(forSheet)});
+      const ok=new Set(j.ids||[]);
+      cases=cases.map(c=>ok.has(c.id)&&part.find(p=>p.id==c.id&&p.updated==c.updated)?{...c,_dirty:false}:c).filter(c=>!(c.deleted&&!c._dirty));
+      store();
+    }
+    const j=await call('GET');
+    const remote=(j.cases||[]).map(fromSheet),ids=new Set(remote.map(c=>c.id));
+    for(const r of remote){const l=cases.find(c=>c.id==r.id);if(!l)cases.push(r);else if(!l._dirty&&r.updated>=(l.updated||0))Object.assign(l,r,{_dirty:false})}
+    cases=cases.filter(c=>c._dirty||ids.has(c.id)); // removed on sheet by someone else
+    store();cfg.last=Date.now();LS.set('ifc_cfg',cfg);
+    if(manual)toast('Sync complete');
+  }catch(e){if(manual)toast('Sync failed: '+(e.message||'check URL and key'))}
+  finally{syncing=false;if(!cur)render();status();info()}
+}
+addEventListener('online',()=>sync());addEventListener('offline',status);
+setInterval(()=>sync(),5*60e3);
+
+// ---- settings ----
+function info(){
+  $('lastSync').textContent=cfg.last?'Last synced: '+new Date(cfg.last).toLocaleString():'Not synced yet.';
+  const p=cases.filter(c=>c._dirty).length;
+  $('dataInfo').textContent=live_().length+' cases on this phone'+(p?', '+p+' waiting to sync.':'.');
+}
+function openSettings(){$('s_url').value=cfg.url;$('s_key').value=cfg.key;$('s_by').value=cfg.by;info();show('setView');$('bar').hidden=true;$('newBtn').hidden=true;$('setBtn').hidden=true;$('backFromSet').hidden=false}
+$('setBtn').onclick=openSettings;
+const bk=document.createElement('button');bk.type='button';bk.id='backFromSet';bk.textContent='Back';bk.hidden=true;$('setBtn').before(bk);
+bk.onclick=()=>{bk.hidden=true;back()};
+$('saveSet').onclick=()=>{
+  const u=$('s_url').value.trim();
+  if(u&&!/^https:\/\/script\.google(usercontent)?\.com\//.test(u)){toast('The URL should start with https://script.google.com/');return}
+  cfg={...cfg,url:u,key:$('s_key').value.trim(),by:$('s_by').value.trim()};LS.set('ifc_cfg',cfg);toast('Settings saved');
+  if(cfg.url){cases.forEach(c=>{if(!cfg.synced_once)c._dirty=true});cfg.synced_once=true;LS.set('ifc_cfg',cfg);store();sync(true)}
+};
+$('syncNow').onclick=()=>sync(true);
+$('exportBtn').onclick=()=>{
+  const all=live_();if(!all.length){toast('No cases to export');return}
+  const cell=v=>{v=Array.isArray(v)?v.join('; '):(v??'');v=String(v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const cols=COLS.filter(c=>c[0]!='updated'&&c[0]!='device');
+  const csv='﻿'+[cols.map(c=>cell(c[1])).join(','),...all.map(c=>cols.map(([k])=>cell(k=='dpp'?dpp(c):c[k])).join(','))].join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='infertility_cases_'+today()+'.csv';document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
+};
+
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+render();sync();
+}
+</script>
+</body>
+</html>
